@@ -11,7 +11,7 @@ public class DesktopLauncher {
 		config.height = 720;
 		config.title = "Bad Wolf";
 		config.vSyncEnabled = true;
-		config.useGL30 = true;
+		//config.useGL30 = true;
 		config.resizable = false;
 		new LwjglApplication(new Main(), config);
 	}
