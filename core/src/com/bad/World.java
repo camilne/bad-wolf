@@ -104,24 +104,39 @@ public class World implements InputProcessor{
         camera.position.y = player.getCenterY();
     }
 
+    private boolean movePlayer(int x, int y) {
+        int newX = player.getTileX() + x;
+        int newY = player.getTileY() + y;
+
+        if(newX < 0 || newX >= width || newY < 0 || newY >= height)
+            return false;
+
+        if(tiles[player.getTileX() + x][player.getTileY() + y].canTravel()) {
+            player.move(x, y);
+            return true;
+        }
+
+        return false;
+    }
+
     @Override
     public boolean keyDown(int keycode) {
         switch(keycode) {
             case Input.Keys.W:
             case Input.Keys.UP:
-                player.move(0, 1);
+                movePlayer(0, 1);
                 break;
             case Input.Keys.A:
             case Input.Keys.LEFT:
-                player.move(-1, 0);
+                movePlayer(-1, 0);
                 break;
             case Input.Keys.S:
             case Input.Keys.DOWN:
-                player.move(0, -1);
+                movePlayer(0, -1);
                 break;
             case Input.Keys.D:
             case Input.Keys.RIGHT:
-                player.move(1, 0);
+                movePlayer(1, 0);
                 break;
         }
         return false;
