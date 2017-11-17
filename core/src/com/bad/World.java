@@ -18,7 +18,6 @@ public class World {
     private OrthographicCamera camera;
     private float desPosX;
     private float desPosY;
-    private Texture black;
 
     public World() {
         player = new Player();
@@ -36,8 +35,6 @@ public class World {
         camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         desPosX = 0;
         desPosY = 0;
-
-        black = new Texture("images/black.png");
     }
 
     public void update() {
