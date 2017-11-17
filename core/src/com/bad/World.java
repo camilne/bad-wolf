@@ -60,12 +60,21 @@ public class World {
     private void renderTiles(SpriteBatch batch) {
         for(int i = -2; i <= 2; i++) {
             for(int j = -2; j <= 2; j++) {
+                if(Math.abs(i) == 2 && Math.abs(j) == 2) {
+                    batch.setColor(1, 1, 1, 0.25f);
+                } else if(Math.abs(i) == 2 || Math.abs(j) == 2) {
+                    batch.setColor(1, 1, 1, 0.5f);
+                } else {
+                    batch.setColor(1, 1, 1, 1);
+                }
+
                 int x = i + player.getTileX();
                 int y = j + player.getTileY();
                 if(x >= 0 && x < width && y >= 0 && y < height)
                     tiles[x][y].render(batch);
             }
         }
+        batch.setColor(1, 1, 1, 1);
     }
 
     private void centerCamera(float x, float y) {
