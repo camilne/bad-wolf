@@ -16,9 +16,9 @@ public class Player {
     private float size;
     private Texture texture;
 
-    public Player() {
-        this.x = 0;
-        this.y = 0;
+    public Player(float x, float y) {
+        this.x = x;
+        this.y = y;
 
         size = Tile.SIZE;
         texture = new Texture("images/badlogic.jpg");

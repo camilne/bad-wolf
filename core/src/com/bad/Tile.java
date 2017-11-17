@@ -10,6 +10,28 @@ import java.util.Random;
  * @version 1.0.0
  */
 public class Tile {
+    private enum TileType {
+        GROUND(0, true),
+        WALL(1, false),
+        SPAWN(0, true);
+
+        private int imageId;
+        private boolean isTravelable;
+
+        TileType(int imageId, boolean isTravelable) {
+            this.imageId = imageId;
+            this.isTravelable = isTravelable;
+        }
+
+        public int getImageId() {
+            return imageId;
+        }
+
+        public boolean isTravelable() {
+            return isTravelable;
+        }
+    }
+
     public static final int SIZE = 32;
 
     private static Texture[] images = new Texture[] {
@@ -19,15 +41,26 @@ public class Tile {
 
     private int x;
     private int y;
-    private Texture image;
+    private int id;
+    private TileType type;
 
     public Tile(int x, int y, int id) {
         this.x = x * SIZE;
         this.y = y * SIZE;
-        image = images[id];
+        this.id = id;
+
+        type = TileType.values()[id];
     }
 
     public void render(SpriteBatch batch) {
-        batch.draw(image, x, y, SIZE, SIZE);
+        batch.draw(images[type.getImageId()], x, y, SIZE, SIZE);
+    }
+
+    public boolean canTravel() {
+        return type.isTravelable();
+    }
+
+    public boolean isSpawn() {
+        return type == TileType.SPAWN;
     }
 }

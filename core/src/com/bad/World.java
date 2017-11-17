@@ -24,18 +24,14 @@ public class World implements InputProcessor{
     private float desPosY;
 
     public World() {
-        player = new Player();
         Gdx.input.setInputProcessor(this);
+        camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
         try {
             loadLevel("levels/1.txt");
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        desPosX = 0;
-        desPosY = 0;
     }
 
     public void update() {
@@ -83,18 +79,29 @@ public class World implements InputProcessor{
     private void loadLevel(String name) throws IOException {
         BufferedReader reader = new BufferedReader(new FileReader(name));
 
+        int playerX = 0;
+        int playerY = 0;
+
         width = Integer.parseInt(reader.readLine().split("=")[1].trim());
         height = Integer.parseInt(reader.readLine().split("=")[1].trim());
 
         tiles = new Tile[width][height];
-        for(int j = 0; j < height; j++) {
+        for(int j = height - 1; j >= 0; j--) {
             String[] strTiles = reader.readLine().split("\\s+");
             for (int i = 0; i < width; i++) {
                 tiles[i][j] = new Tile(i, j, Integer.parseInt(strTiles[i]));
+                if(tiles[i][j].isSpawn()) {
+                    playerX = i * Tile.SIZE;
+                    playerY = j * Tile.SIZE;
+                }
             }
         }
 
         reader.close();
+
+        player = new Player(playerX, playerY);
+        camera.position.x = player.getCenterX();
+        camera.position.y = player.getCenterY();
     }
 
     @Override
