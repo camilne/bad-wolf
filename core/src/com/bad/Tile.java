@@ -21,12 +21,10 @@ public class Tile {
     private int y;
     private Texture image;
 
-    public Tile(int x, int y) {
+    public Tile(int x, int y, int id) {
         this.x = x * SIZE;
         this.y = y * SIZE;
-
-        int imageNum = new Random().nextInt(2);
-        image = images[imageNum];
+        image = images[id];
     }
 
     public void render(SpriteBatch batch) {

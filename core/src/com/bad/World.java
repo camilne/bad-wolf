@@ -5,6 +5,8 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
+import java.io.*;
+
 /**
  * @author Cameron Milne
  * @version 1.0.0
@@ -23,13 +25,10 @@ public class World {
         player = new Player();
         Gdx.input.setInputProcessor(player);
 
-        width = 20;
-        height = 30;
-        tiles = new Tile[width][height];
-        for(int i = 0; i < width; i++) {
-            for (int j = 0; j < height; j++) {
-                tiles[i][j] = new Tile(i, j);
-            }
+        try {
+            loadLevel("levels/1.txt");
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
         camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -77,5 +76,22 @@ public class World {
     private void centerCamera(float x, float y) {
         desPosX = x;
         desPosY = y;
+    }
+
+    private void loadLevel(String name) throws IOException {
+        BufferedReader reader = new BufferedReader(new FileReader(name));
+
+        width = Integer.parseInt(reader.readLine().split("=")[1].trim());
+        height = Integer.parseInt(reader.readLine().split("=")[1].trim());
+
+        tiles = new Tile[width][height];
+        for(int j = 0; j < height; j++) {
+            String[] strTiles = reader.readLine().split("\\s+");
+            for (int i = 0; i < width; i++) {
+                tiles[i][j] = new Tile(i, j, Integer.parseInt(strTiles[i]));
+            }
+        }
+
+        reader.close();
     }
 }
