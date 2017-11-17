@@ -2,6 +2,7 @@ package com.bad;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 /**
@@ -17,6 +18,7 @@ public class World {
     private OrthographicCamera camera;
     private float desPosX;
     private float desPosY;
+    private Texture black;
 
     public World() {
         player = new Player();
@@ -34,6 +36,8 @@ public class World {
         camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         desPosX = 0;
         desPosY = 0;
+
+        black = new Texture("images/black.png");
     }
 
     public void update() {
@@ -48,13 +52,20 @@ public class World {
     public void render(SpriteBatch batch) {
         batch.setProjectionMatrix(camera.combined);
 
-        for(int i = 0; i < width; i++) {
-            for(int j = 0; j < height; j++) {
-                tiles[i][j].render(batch);
-            }
-        }
+        renderTiles(batch);
 
         player.render(batch);
+    }
+
+    private void renderTiles(SpriteBatch batch) {
+        for(int i = -2; i <= 2; i++) {
+            for(int j = -2; j <= 2; j++) {
+                int x = i + player.getTileX();
+                int y = j + player.getTileY();
+                if(x >= 0 && x < width && y >= 0 && y < height)
+                    tiles[x][y].render(batch);
+            }
+        }
     }
 
     private void centerCamera(float x, float y) {

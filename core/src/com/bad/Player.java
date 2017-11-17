@@ -53,6 +53,14 @@ public class Player implements InputProcessor {
         return y + size / 2;
     }
 
+    public int getTileX() {
+        return (int)(getCenterX() / Tile.SIZE);
+    }
+
+    public int getTileY() {
+        return (int)(getCenterY() / Tile.SIZE);
+    }
+
     @Override
     public boolean keyDown(int keycode) {
         switch(keycode) {
