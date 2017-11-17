@@ -13,12 +13,15 @@ public class Player implements InputProcessor {
 
     private float x;
     private float y;
+    private float size;
     private Texture texture;
 
     public Player() {
         this.x = 0;
         this.y = 0;
-        texture = new Texture("badlogic.jpg");
+
+        size = Tile.SIZE;
+        texture = new Texture("images/badlogic.jpg");
     }
 
     public void update() {
@@ -26,12 +29,28 @@ public class Player implements InputProcessor {
     }
 
     public void render(SpriteBatch batch) {
-        batch.draw(texture, x, y, World.TILE_SIZE, World.TILE_SIZE);
+        batch.draw(texture, x, y, size, size);
     }
 
     private void move(int x, int y) {
-        this.x += x * World.TILE_SIZE;
-        this.y += y * World.TILE_SIZE;
+        this.x += x * Tile.SIZE;
+        this.y += y * Tile.SIZE;
+    }
+
+    public float getX() {
+        return x;
+    }
+
+    public float getY() {
+        return y;
+    }
+
+    public float getCenterX() {
+        return x + size / 2;
+    }
+
+    public float getCenterY() {
+        return y + size / 2;
     }
 
     @Override
