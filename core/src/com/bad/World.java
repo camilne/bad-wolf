@@ -13,6 +13,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import javafx.application.Application;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -24,6 +25,8 @@ import java.util.Timer;
  * @version 1.0.0
  */
 public class World implements InputProcessor {
+
+    private static final int FADE_TIME = 2000;
 
     private int width;
     private int height;
@@ -39,13 +42,13 @@ public class World implements InputProcessor {
     private static Sound music = Gdx.audio.newSound(Gdx.files.local("sounds/background_music.mp3"));
     private SpriteBatch batch;
     private Texture texture;
-    private float a = 1;
-    private boolean fadingToBlack = true;
     private GameObject[][] objects;
     private BlockObject block;
     private boolean blockAlongX;
     private int lastBlockX;
     private int lastBlockY;
+    private Runnable fadeTask;
+    private float fadeTime;
 
     public World(String avatarImage) {
         batch = new SpriteBatch();
@@ -60,6 +63,7 @@ public class World implements InputProcessor {
         blockAlongX = false;
         lastBlockX = -1;
         lastBlockY = -1;
+        fadeTime = FADE_TIME / 2.0f;
 
         level = 1;
         File levelsFolder = new File("levels/");
@@ -96,24 +100,33 @@ public class World implements InputProcessor {
 
         player.render(batch);
 
-        if (fadingToBlack) {
-            if (a <= 1) {
+        if(fadeTime <= FADE_TIME) {
+            if(fadeTime < FADE_TIME / 3) {
+                float a = map(0, FADE_TIME / 3, 0, 1, fadeTime);
                 batch.setColor(1, 1, 1, a);
-                batch.draw(texture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-                a += 1.0 / 60;
+            } else if(fadeTime > FADE_TIME * 2.0 / 3) {
+                float a = map(2.0f / 3* FADE_TIME, FADE_TIME, 1, 0, fadeTime);
+                batch.setColor(1, 1, 1, a);
             } else {
-                fadingToBlack = false;
+                batch.setColor(1, 1, 1, 1);
+                if(fadeTime >= FADE_TIME / 2 - 1000.0/60/2 && fadeTime < FADE_TIME / 2 + 1000.0/60/2 && fadeTask != null) {
+                    fadeTask.run();
+                }
             }
+
+            batch.draw(texture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+
+            fadeTime += 1000.0f/60;
         }
-        else {
-            if (a >= 0) {
-                batch.setColor(1,1,1,a);
-                batch.draw(texture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-                a -= 1.0 / 60;
-            }
-        }
-        batch.setColor(1, 1, 1, 1);
         batch.end();
+    }
+
+    // Maps a variable x from a range [a,b] to [c,d]
+    private float map(float a, float b, float c, float d, float x) {
+        if(b - a == 0)
+            return 0;
+
+        return (x - a) / (b - a) * (d - c) + c;
     }
 
     private void renderTiles() {
@@ -246,9 +259,9 @@ public class World implements InputProcessor {
         }
     }
 
-    public void fadeToBlack() {
-        a = 0;
-        fadingToBlack = true;
+    public void fadeToBlack(Runnable fadeTask) {
+        this.fadeTask = fadeTask;
+        fadeTime = 0;
     }
 
     private boolean moveBlock(int x, int y) {
@@ -261,7 +274,7 @@ public class World implements InputProcessor {
         if(newX < 0 || newX >= width || newY < 0 || newY >= height)
             return false;
 
-        if(!tiles[newX][newY].isTravelable())
+        if(!tiles[newX][newY].isBoxPlaceable())
             return false;
 
         objects[newX][newY] = block;
@@ -352,13 +365,14 @@ public class World implements InputProcessor {
         if(connectedTiles.containsKey(currentTile.getConnectedNetwork())) {
             networkTiles = connectedTiles.get(currentTile.getConnectedNetwork());
         }
-        tiles[x][y].onBlockEnter(this, player, networkTiles);
 
         if(currentTile.shouldPropogateAction()) {
             for(Tile tile : networkTiles) {
                 tile.onAction();
             }
         }
+
+        tiles[x][y].onBlockEnter(this, player, networkTiles);
     }
 
     private void onBlockExit() {
@@ -377,13 +391,14 @@ public class World implements InputProcessor {
         if(connectedTiles.containsKey(currentTile.getConnectedNetwork())) {
             networkTiles = connectedTiles.get(currentTile.getConnectedNetwork());
         }
-        tiles[x][y].onBlockExit(this, player, networkTiles);
 
         if(currentTile.shouldPropogateAction()) {
             for(Tile tile : networkTiles) {
                 tile.onAction();
             }
         }
+
+        tiles[x][y].onBlockExit(this, player, networkTiles);
 
         lastBlockX = block.getTileX();
         lastBlockY = block.getTileY();
@@ -403,9 +418,16 @@ public class World implements InputProcessor {
 
     public void nextLevel() {
         if(++level > maxLevels) {
-            level = 1;
+            playCredits();
+            return;
         }
         loadLevel("levels/" + (level) + ".txt");
+    }
+
+    public void playCredits() {
+        music.stop();
+        Application.launch(Credits.class, String.valueOf(Gdx.graphics.getWidth()), String.valueOf(Gdx.graphics.getHeight()));
+        Gdx.app.exit();
     }
 
     private BlockObject selectBlock() {

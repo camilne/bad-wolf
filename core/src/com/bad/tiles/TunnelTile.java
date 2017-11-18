@@ -38,11 +38,9 @@ public class TunnelTile extends Tile {
     @Override
     public void onPlayerEnter(World world, Player player, ArrayList<Tile> networkTiles) {
         tunnelSound.play();
-        world.fadeToBlack();
         final World finalWorld = world;
         final ArrayList<Tile> finalNetworkTiles = networkTiles;
-        Timer timer = new Timer();
-        timer.schedule(new TimerTask() {
+        world.fadeToBlack(new Runnable() {
             @Override
             public void run() {
                 for(Tile tile : finalNetworkTiles) {
@@ -52,6 +50,11 @@ public class TunnelTile extends Tile {
                     }
                 }
             }
-        }, 1000);
+        });
+    }
+
+    @Override
+    public boolean isBoxPlaceable() {
+        return false;
     }
 }

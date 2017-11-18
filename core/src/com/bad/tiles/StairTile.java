@@ -38,14 +38,12 @@ public class StairTile extends Tile {
     @Override
     public void onPlayerEnter(World world, Player player, ArrayList<Tile> networkTiles) {
         stairSound.play();
-        world.fadeToBlack();
         final World finalWorld = world;
-        Timer timer = new Timer();
-        timer.schedule(new TimerTask() {
+        world.fadeToBlack(new Runnable() {
             @Override
             public void run() {
                 finalWorld.nextLevel();
             }
-        }, 1000);
+        });
     }
 }
