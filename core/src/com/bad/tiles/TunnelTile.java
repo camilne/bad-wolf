@@ -9,8 +9,8 @@ import java.util.ArrayList;
  * @author Cameron Milne
  * @version 1.0.0
  */
-public class StairTile extends Tile {
-    public StairTile(int x, int y) {
+public class TunnelTile extends Tile {
+    public TunnelTile(int x, int y) {
         super(x, y);
     }
 
@@ -21,7 +21,7 @@ public class StairTile extends Tile {
 
     @Override
     protected int getRegionX() {
-        return 5;
+        return 6;
     }
 
     @Override
@@ -31,6 +31,11 @@ public class StairTile extends Tile {
 
     @Override
     public void onPlayerEnter(World world, Player player, ArrayList<Tile> networkTiles) {
-        world.nextLevel();
+        for(Tile tile : networkTiles) {
+            if(tile instanceof TunnelSpawnTile) {
+                world.setPlayerPosition(tile.getX(), tile.getY());
+                break;
+            }
+        }
     }
 }

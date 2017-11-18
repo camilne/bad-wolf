@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 /**
@@ -37,13 +38,13 @@ public abstract class Tile {
     private int connected;
 
     public Tile(int x, int y) {
-        this.x = x * SIZE;
-        this.y = y * SIZE;
+        this.x = x;
+        this.y = y;
         connected = -1;
     }
 
     public void render(SpriteBatch batch) {
-        batch.draw(images[getRegionX()][getRegionY()], x, y, SIZE, SIZE);
+        batch.draw(images[getRegionX()][getRegionY()], x * SIZE, y * SIZE, SIZE, SIZE);
     }
 
     public abstract boolean isTravelable();
@@ -54,7 +55,7 @@ public abstract class Tile {
 
     public void onAction() { }
 
-    public void onPlayerEnter(World world, Player player) { }
+    public void onPlayerEnter(World world, Player player, ArrayList<Tile> networkTiles) { }
 
     public boolean shouldPropogateAction() {
         return false;
@@ -71,4 +72,12 @@ public abstract class Tile {
     protected abstract int getRegionX();
 
     protected abstract int getRegionY();
+
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
+    }
 }

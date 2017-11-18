@@ -150,10 +150,15 @@ public class World implements InputProcessor {
         if(tiles[player.getTileX() + x][player.getTileY() + y].isTravelable()) {
             player.move(x, y);
             Tile currentTile = tiles[player.getTileX()][player.getTileY()];
-            currentTile.onPlayerEnter(this, player);
 
-            if(currentTile.getConnectedNetwork() != -1 && currentTile.shouldPropogateAction()) {
-                ArrayList<Tile> networkTiles = connectedTiles.get(currentTile.getConnectedNetwork());
+            ArrayList<Tile> networkTiles = new ArrayList<Tile>();
+            if(connectedTiles.containsKey(currentTile.getConnectedNetwork())) {
+                networkTiles = connectedTiles.get(currentTile.getConnectedNetwork());
+            }
+
+            currentTile.onPlayerEnter(this, player, networkTiles);
+
+            if(currentTile.shouldPropogateAction()) {
                 for(Tile tile : networkTiles) {
                     tile.onAction();
                 }
@@ -162,6 +167,18 @@ public class World implements InputProcessor {
         }
 
         return false;
+    }
+
+    public boolean setPlayerPosition(int x, int y) {
+        if(x < 0 || x >= width || y < 0 || y >= height)
+            return false;
+
+        if(tiles[x][y].isTravelable()) {
+            player.setX(x * Tile.SIZE);
+            player.setY(y * Tile.SIZE);
+        }
+
+        return true;
     }
 
     public void nextLevel() {

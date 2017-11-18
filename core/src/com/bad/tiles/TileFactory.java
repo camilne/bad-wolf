@@ -20,6 +20,8 @@ public class TileFactory {
         tiles.put(3, ButtonTile.class);
         tiles.put(4, DoorTile.class);
         tiles.put(6, StairTile.class);
+        tiles.put(7, TunnelTile.class);
+        tiles.put(8, TunnelSpawnTile.class);
     }
 
     public static Tile create(int x, int y, int id) {
