@@ -9,16 +9,16 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
  * @author Cameron Milne
  * @version 1.0.0
  */
-public class Player implements InputProcessor {
+public class Player {
 
     private float x;
     private float y;
     private float size;
     private Texture texture;
 
-    public Player() {
-        this.x = 0;
-        this.y = 0;
+    public Player(float x, float y) {
+        this.x = x;
+        this.y = y;
 
         size = Tile.SIZE;
         texture = new Texture("images/badlogic.jpg");
@@ -32,7 +32,7 @@ public class Player implements InputProcessor {
         batch.draw(texture, x, y, size, size);
     }
 
-    private void move(int x, int y) {
+    public void move(int x, int y) {
         this.x += x * Tile.SIZE;
         this.y += y * Tile.SIZE;
     }
@@ -59,63 +59,5 @@ public class Player implements InputProcessor {
 
     public int getTileY() {
         return (int)(getCenterY() / Tile.SIZE);
-    }
-
-    @Override
-    public boolean keyDown(int keycode) {
-        switch(keycode) {
-            case Input.Keys.W:
-            case Input.Keys.UP:
-                move(0, 1);
-                break;
-            case Input.Keys.A:
-            case Input.Keys.LEFT:
-                move(-1, 0);
-                break;
-            case Input.Keys.S:
-            case Input.Keys.DOWN:
-                move(0, -1);
-                break;
-            case Input.Keys.D:
-            case Input.Keys.RIGHT:
-                move(1, 0);
-                break;
-        }
-        return false;
-    }
-
-    @Override
-    public boolean keyUp(int keycode) {
-        return false;
-    }
-
-    @Override
-    public boolean keyTyped(char character) {
-        return false;
-    }
-
-    @Override
-    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        return false;
-    }
-
-    @Override
-    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-        return false;
-    }
-
-    @Override
-    public boolean touchDragged(int screenX, int screenY, int pointer) {
-        return false;
-    }
-
-    @Override
-    public boolean mouseMoved(int screenX, int screenY) {
-        return false;
-    }
-
-    @Override
-    public boolean scrolled(int amount) {
-        return false;
     }
 }

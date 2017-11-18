@@ -1,17 +1,21 @@
 package com.bad;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * @author Cameron Milne
  * @version 1.0.0
  */
-public class World {
+public class World implements InputProcessor{
 
     private int width;
     private int height;
@@ -20,20 +24,18 @@ public class World {
     private OrthographicCamera camera;
     private float desPosX;
     private float desPosY;
+    private HashMap<Integer, ArrayList<Tile>> connectedTiles;
 
     public World() {
-        player = new Player();
-        Gdx.input.setInputProcessor(player);
+        Gdx.input.setInputProcessor(this);
+        camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        connectedTiles = new HashMap<Integer, ArrayList<Tile>>();
 
         try {
             loadLevel("levels/1.txt");
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        desPosX = 0;
-        desPosY = 0;
     }
 
     public void update() {
@@ -81,17 +83,119 @@ public class World {
     private void loadLevel(String name) throws IOException {
         BufferedReader reader = new BufferedReader(new FileReader(name));
 
+        int playerX = 0;
+        int playerY = 0;
+
         width = Integer.parseInt(reader.readLine().split("=")[1].trim());
         height = Integer.parseInt(reader.readLine().split("=")[1].trim());
 
         tiles = new Tile[width][height];
-        for(int j = 0; j < height; j++) {
+        for(int j = height - 1; j >= 0; j--) {
             String[] strTiles = reader.readLine().split("\\s+");
             for (int i = 0; i < width; i++) {
-                tiles[i][j] = new Tile(i, j, Integer.parseInt(strTiles[i]));
+                String strId = strTiles[i].split("=")[0];
+                tiles[i][j] = new Tile(i, j, Integer.parseInt(strId));
+
+                if(strTiles[i].split("=").length > 1) {
+                    int connect = Integer.parseInt(strTiles[i].split("=")[1]);
+                    if(!connectedTiles.containsKey(connect)) {
+                        connectedTiles.put(connect, new ArrayList<Tile>());
+                    }
+                    connectedTiles.get(connect).add(tiles[i][j]);
+                    tiles[i][j].setConnectedNetwork(connect);
+                }
+
+                if(tiles[i][j].isSpawn()) {
+                    playerX = i * Tile.SIZE;
+                    playerY = j * Tile.SIZE;
+                }
             }
         }
 
         reader.close();
+
+        player = new Player(playerX, playerY);
+        camera.position.x = player.getCenterX();
+        camera.position.y = player.getCenterY();
+    }
+
+    private boolean movePlayer(int x, int y) {
+        int newX = player.getTileX() + x;
+        int newY = player.getTileY() + y;
+
+        if(newX < 0 || newX >= width || newY < 0 || newY >= height)
+            return false;
+
+        if(tiles[player.getTileX() + x][player.getTileY() + y].canTravel()) {
+            player.move(x, y);
+            Tile currentTile = tiles[player.getTileX()][player.getTileY()];
+            if(currentTile.getConnectedNetwork() != -1 && currentTile.shouldPropogateAction()) {
+                ArrayList<Tile> networkTiles = connectedTiles.get(currentTile.getConnectedNetwork());
+                for(Tile tile : networkTiles) {
+                    tile.onAction();
+                }
+            }
+            return true;
+        }
+
+        return false;
+    }
+
+    @Override
+    public boolean keyDown(int keycode) {
+        switch(keycode) {
+            case Input.Keys.W:
+            case Input.Keys.UP:
+                movePlayer(0, 1);
+                break;
+            case Input.Keys.A:
+            case Input.Keys.LEFT:
+                movePlayer(-1, 0);
+                break;
+            case Input.Keys.S:
+            case Input.Keys.DOWN:
+                movePlayer(0, -1);
+                break;
+            case Input.Keys.D:
+            case Input.Keys.RIGHT:
+                movePlayer(1, 0);
+                break;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean keyUp(int keycode) {
+        return false;
+    }
+
+    @Override
+    public boolean keyTyped(char character) {
+        return false;
+    }
+
+    @Override
+    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        return false;
+    }
+
+    @Override
+    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+        return false;
+    }
+
+    @Override
+    public boolean touchDragged(int screenX, int screenY, int pointer) {
+        return false;
+    }
+
+    @Override
+    public boolean mouseMoved(int screenX, int screenY) {
+        return false;
+    }
+
+    @Override
+    public boolean scrolled(int amount) {
+        return false;
     }
 }
