@@ -1,7 +1,8 @@
-package com.bad;
+package com.bad.tiles;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 import java.util.Random;
 
@@ -9,14 +10,15 @@ import java.util.Random;
  * @author Cameron Milne
  * @version 1.0.0
  */
-public class Tile {
-    private enum TileType {
+public abstract class Tile {
+    protected enum TileType {
         GROUND(0, true),
         WALL(1, false),
         SPAWN(0, true),
         BUTTON(2, true),
         DOOR_NS(3, false),
-        DOOR_NS_OPEN(4, true);
+        DOOR_NS_OPEN(4, true),
+        END(5, true);
 
         private int imageId;
         private boolean isTravelable;
@@ -37,52 +39,45 @@ public class Tile {
 
     public static final int SIZE = 32;
 
-    private static Texture[] images = new Texture[] {
-            new Texture("images/tile.png"),
-            new Texture("images/tile2.png"),
-            new Texture("images/tile3.png"),
-            new Texture("images/tile4.png"),
-            new Texture("images/tile5.png")
-    };
+    private static TextureRegion[][] images;
+
+    static {
+        Texture image = new Texture("images/tiles.png");
+        final int IMG_TILE_SIZE = 32;
+
+        int width = image.getWidth() / IMG_TILE_SIZE;
+        int height = image.getHeight() / IMG_TILE_SIZE;
+        images = new TextureRegion[width][height];
+        for(int i = 0; i < width; i++) {
+            for(int j = 0; j < height; j++) {
+                images[i][j] = new TextureRegion(image, i * IMG_TILE_SIZE, j * IMG_TILE_SIZE, IMG_TILE_SIZE, IMG_TILE_SIZE);
+            }
+        }
+    }
 
     private int x;
     private int y;
-    private int id;
-    private TileType type;
     private int connected;
 
-    public Tile(int x, int y, int id) {
+    public Tile(int x, int y) {
         this.x = x * SIZE;
         this.y = y * SIZE;
-        this.id = id;
-
-        type = TileType.values()[id];
         connected = -1;
     }
 
     public void render(SpriteBatch batch) {
-        batch.draw(images[type.getImageId()], x, y, SIZE, SIZE);
+        batch.draw(images[getRegionX()][getRegionY()], x, y, SIZE, SIZE);
     }
 
-    public boolean canTravel() {
-        return type.isTravelable();
-    }
+    public abstract boolean isTravelable();
 
     public boolean isSpawn() {
-        return type == TileType.SPAWN;
+        return false;
     }
 
-    public void onAction() {
-        if(type == TileType.DOOR_NS) {
-            type = TileType.DOOR_NS_OPEN;
-        }
-    }
+    public void onAction() { }
 
     public boolean shouldPropogateAction() {
-        if(type == TileType.BUTTON) {
-            return true;
-        }
-
         return false;
     }
 
@@ -93,4 +88,8 @@ public class Tile {
     public int getConnectedNetwork() {
         return connected;
     }
+
+    protected abstract int getRegionX();
+
+    protected abstract int getRegionY();
 }

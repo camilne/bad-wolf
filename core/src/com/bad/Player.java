@@ -1,7 +1,6 @@
 package com.bad;
 
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.InputProcessor;
+import com.bad.tiles.Tile;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 

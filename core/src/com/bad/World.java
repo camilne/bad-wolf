@@ -1,10 +1,11 @@
 package com.bad;
 
+import com.bad.tiles.Tile;
+import com.bad.tiles.TileFactory;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import java.io.*;
@@ -94,7 +95,7 @@ public class World implements InputProcessor{
             String[] strTiles = reader.readLine().split("\\s+");
             for (int i = 0; i < width; i++) {
                 String strId = strTiles[i].split("=")[0];
-                tiles[i][j] = new Tile(i, j, Integer.parseInt(strId));
+                tiles[i][j] = TileFactory.create(i, j, Integer.parseInt(strId));
 
                 if(strTiles[i].split("=").length > 1) {
                     int connect = Integer.parseInt(strTiles[i].split("=")[1]);
@@ -126,9 +127,10 @@ public class World implements InputProcessor{
         if(newX < 0 || newX >= width || newY < 0 || newY >= height)
             return false;
 
-        if(tiles[player.getTileX() + x][player.getTileY() + y].canTravel()) {
+        if(tiles[player.getTileX() + x][player.getTileY() + y].isTravelable()) {
             player.move(x, y);
             Tile currentTile = tiles[player.getTileX()][player.getTileY()];
+
             if(currentTile.getConnectedNetwork() != -1 && currentTile.shouldPropogateAction()) {
                 ArrayList<Tile> networkTiles = connectedTiles.get(currentTile.getConnectedNetwork());
                 for(Tile tile : networkTiles) {
