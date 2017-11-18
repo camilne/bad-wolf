@@ -177,12 +177,15 @@ public class World implements InputProcessor {
                     tiles[i][j] = TileFactory.create(i, j, Integer.parseInt(strId));
 
                     if (strTiles[i].split("=").length > 1) {
-                        int connect = Integer.parseInt(strTiles[i].split("=")[1]);
-                        if (!connectedTiles.containsKey(connect)) {
-                            connectedTiles.put(connect, new ArrayList<Tile>());
+                        String[] networks = strTiles[i].split("=")[1].split(",");
+                        for(String network : networks) {
+                            int connect = Integer.parseInt(network);
+                            if (!connectedTiles.containsKey(connect)) {
+                                connectedTiles.put(connect, new ArrayList<Tile>());
+                            }
+                            connectedTiles.get(connect).add(tiles[i][j]);
+                            tiles[i][j].setConnectedNetwork(connect);
                         }
-                        connectedTiles.get(connect).add(tiles[i][j]);
-                        tiles[i][j].setConnectedNetwork(connect);
                     }
 
                     if (tiles[i][j].isSpawn()) {
