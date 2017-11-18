@@ -65,8 +65,6 @@ public class World implements InputProcessor {
         lastBlockY = -1;
         fadeTime = FADE_TIME / 2.0f;
 
-        playCredits();
-
         level = 1;
         File levelsFolder = new File("levels/");
         if(levelsFolder.exists()) {
