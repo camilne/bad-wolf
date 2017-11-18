@@ -30,7 +30,7 @@ public class World implements InputProcessor {
     private int level;
     private int maxLevels;
     private String avatarImage;
-    private static Sound music = Gdx.audio.newSound(Gdx.files.local("../assets/sounds/background_music.mp3"));
+    private static Sound music = Gdx.audio.newSound(Gdx.files.local("sounds/background_music.mp3"));
 
 
     public World(String avatarImage) {
