@@ -13,31 +13,6 @@ import java.util.Random;
  * @version 1.0.0
  */
 public abstract class Tile {
-    protected enum TileType {
-        GROUND(0, true),
-        WALL(1, false),
-        SPAWN(0, true),
-        BUTTON(2, true),
-        DOOR_NS(3, false),
-        DOOR_NS_OPEN(4, true),
-        END(5, true);
-
-        private int imageId;
-        private boolean isTravelable;
-
-        TileType(int imageId, boolean isTravelable) {
-            this.imageId = imageId;
-            this.isTravelable = isTravelable;
-        }
-
-        public int getImageId() {
-            return imageId;
-        }
-
-        public boolean isTravelable() {
-            return isTravelable;
-        }
-    }
 
     public static final int SIZE = 32;
 
