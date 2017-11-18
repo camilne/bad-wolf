@@ -68,14 +68,23 @@ public class World implements InputProcessor {
     }
 
     private void renderTiles(SpriteBatch batch) {
-        for(int i = -2; i <= 2; i++) {
-            for(int j = -2; j <= 2; j++) {
-                if(Math.abs(i) == 2 && Math.abs(j) == 2) {
+        for(int i = -3; i <= 3; i++) {
+            for(int j = -3; j <= 3; j++) {
+                int ia = Math.abs(i);
+                int ja = Math.abs(j);
+                if(ia == 2 && ja == 2) {
                     batch.setColor(1, 1, 1, 0.25f);
-                } else if(Math.abs(i) == 2 || Math.abs(j) == 2) {
+                } else if((ia == 2 || ja == 2) && (ia != 3) && (ja != 3)) {
                     batch.setColor(1, 1, 1, 0.5f);
-                } else {
+                }
+                else if((ia == 3 && ja < 2) || (ja == 3 && ia < 2)){
+                    batch.setColor(1, 1, 1, 0.25f);
+                }
+                else if(ia < 2 && ja < 2){
                     batch.setColor(1, 1, 1, 1);
+                }
+                else{
+                    batch.setColor(1,1,1,0);
                 }
 
                 int x = i + player.getTileX();
@@ -141,6 +150,13 @@ public class World implements InputProcessor {
     }
 
     private boolean movePlayer(int x, int y) {
+        Player.Direction direction = Player.Direction.NONE;
+        if(x > 0){ direction = Player.Direction.RIGHT; }
+        if(y > 0){ direction = Player.Direction.UP; }
+        if(x < 0){ direction = Player.Direction.LEFT; }
+        if(y < 0){ direction = Player.Direction.DOWN; }
+        player.rotate(direction);
+
         int newX = player.getTileX() + x;
         int newY = player.getTileY() + y;
 
