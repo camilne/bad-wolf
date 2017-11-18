@@ -12,6 +12,6 @@ public class DesktopLauncher {
 		config.title = "Bad Wolf";
 		config.vSyncEnabled = true;
 		config.resizable = false;
-		new LwjglApplication(new Main(), config);
+		new LwjglApplication(new Main(arg[0]), config);
 	}
 }
