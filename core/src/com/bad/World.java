@@ -25,6 +25,8 @@ import java.util.Timer;
  */
 public class World implements InputProcessor {
 
+    private static final int FADE_TIME = 2000;
+
     private int width;
     private int height;
     private Player player;
@@ -39,13 +41,13 @@ public class World implements InputProcessor {
     private static Sound music = Gdx.audio.newSound(Gdx.files.local("sounds/background_music.mp3"));
     private SpriteBatch batch;
     private Texture texture;
-    private float a = 1;
-    private boolean fadingToBlack = true;
     private GameObject[][] objects;
     private BlockObject block;
     private boolean blockAlongX;
     private int lastBlockX;
     private int lastBlockY;
+    private Runnable fadeTask;
+    private int fadeTime;
 
     public World(String avatarImage) {
         batch = new SpriteBatch();
@@ -60,6 +62,7 @@ public class World implements InputProcessor {
         blockAlongX = false;
         lastBlockX = -1;
         lastBlockY = -1;
+        fadeTime = FADE_TIME / 2;
 
         level = 1;
         File levelsFolder = new File("levels/");
@@ -96,23 +99,24 @@ public class World implements InputProcessor {
 
         player.render(batch);
 
-        if (fadingToBlack) {
-            if (a <= 1) {
+        if(fadeTime <= FADE_TIME) {
+            if(fadeTime < FADE_TIME / 3) {
+                float a = (float)fadeTime / (FADE_TIME / 3);
                 batch.setColor(1, 1, 1, a);
-                batch.draw(texture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-                a += 1.0 / 60;
+            } else if(fadeTime > FADE_TIME * 2 / 3) {
+                float a = 1 - (float)fadeTime / (FADE_TIME * 2.0f / 3);
+                batch.setColor(1, 1, 1, a);
             } else {
-                fadingToBlack = false;
+                batch.setColor(1, 1, 1, 1);
+                if(fadeTime >= FADE_TIME / 2 - 1000/60/2 && fadeTime < FADE_TIME / 2 + 1000/60/2 && fadeTask != null) {
+                    fadeTask.run();
+                }
             }
+
+            batch.draw(texture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+
+            fadeTime += 1000/60;
         }
-        else {
-            if (a >= 0) {
-                batch.setColor(1,1,1,a);
-                batch.draw(texture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-                a -= 1.0 / 60;
-            }
-        }
-        batch.setColor(1, 1, 1, 1);
         batch.end();
     }
 
@@ -246,9 +250,9 @@ public class World implements InputProcessor {
         }
     }
 
-    public void fadeToBlack() {
-        a = 0;
-        fadingToBlack = true;
+    public void fadeToBlack(Runnable fadeTask) {
+        this.fadeTask = fadeTask;
+        fadeTime = 0;
     }
 
     private boolean moveBlock(int x, int y) {

@@ -19,6 +19,7 @@ public class TileFactory {
         tiles.put(2, SpawnTile.class);
         tiles.put(3, ButtonTile.class);
         tiles.put(4, DoorTile.class);
+        tiles.put(5, DoorOpenTile.class);
         tiles.put(6, StairTile.class);
         tiles.put(7, TunnelTile.class);
         tiles.put(8, TunnelSpawnTile.class);
