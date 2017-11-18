@@ -57,6 +57,8 @@ public abstract class Tile {
 
     public void onPlayerEnter(World world, Player player, ArrayList<Tile> networkTiles) { }
 
+    public void onBlockEnter(World world, Player player, ArrayList<Tile> networkTiles) { }
+
     public boolean shouldPropogateAction() {
         return false;
     }

@@ -284,6 +284,27 @@ public class World implements InputProcessor {
         return false;
     }
 
+    private void onBlockEnter() {
+        if(block == null)
+            return;
+
+        int x = block.getTileX();
+        int y = block.getTileY();
+
+        ArrayList<Tile> networkTiles = new ArrayList<Tile>();
+        Tile currentTile = tiles[x][y];
+        if(connectedTiles.containsKey(currentTile.getConnectedNetwork())) {
+            networkTiles = connectedTiles.get(currentTile.getConnectedNetwork());
+        }
+        tiles[x][y].onBlockEnter(this, player, networkTiles);
+
+        if(currentTile.shouldPropogateAction()) {
+            for(Tile tile : networkTiles) {
+                tile.onAction();
+            }
+        }
+    }
+
     public boolean setPlayerPosition(int x, int y) {
         if(x < 0 || x >= width || y < 0 || y >= height)
             return false;
@@ -346,22 +367,26 @@ public class World implements InputProcessor {
             case Input.Keys.W:
             case Input.Keys.UP:
                 if(block == null || !blockAlongX)
-                    movePlayer(0, 1);
+                    if(movePlayer(0, 1))
+                        onBlockEnter();
                 break;
             case Input.Keys.A:
             case Input.Keys.LEFT:
                 if(block == null || blockAlongX)
-                    movePlayer(-1, 0);
+                    if(movePlayer(-1, 0))
+                        onBlockEnter();
                 break;
             case Input.Keys.S:
             case Input.Keys.DOWN:
                 if(block == null || !blockAlongX)
-                    movePlayer(0, -1);
+                    if(movePlayer(0, -1))
+                        onBlockEnter();
                 break;
             case Input.Keys.D:
             case Input.Keys.RIGHT:
                 if(block == null || blockAlongX)
-                    movePlayer(1, 0);
+                    if(movePlayer(1, 0))
+                        onBlockEnter();
                 break;
             case Input.Keys.SPACE:
                 block = selectBlock();

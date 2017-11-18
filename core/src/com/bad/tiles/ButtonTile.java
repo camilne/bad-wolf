@@ -35,6 +35,9 @@ public class ButtonTile extends Tile {
     }
 
     @Override
+    public void onBlockEnter(World world, Player player, ArrayList<Tile> networkTiles) { pressButton.play(); }
+
+    @Override
     public void onAction() {
         if (!isPressed) {
             isPressed = true;
