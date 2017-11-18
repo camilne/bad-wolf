@@ -49,6 +49,10 @@ public abstract class Tile {
 
     public abstract boolean isTravelable();
 
+    public boolean isBoxPlaceable() {
+        return true;
+    }
+
     public boolean isSpawn() {
         return false;
     }

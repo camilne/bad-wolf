@@ -52,4 +52,9 @@ public class TunnelTile extends Tile {
             }
         });
     }
+
+    @Override
+    public boolean isBoxPlaceable() {
+        return false;
+    }
 }

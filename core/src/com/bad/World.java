@@ -273,7 +273,7 @@ public class World implements InputProcessor {
         if(newX < 0 || newX >= width || newY < 0 || newY >= height)
             return false;
 
-        if(!tiles[newX][newY].isTravelable())
+        if(!tiles[newX][newY].isBoxPlaceable())
             return false;
 
         objects[newX][newY] = block;
@@ -364,13 +364,14 @@ public class World implements InputProcessor {
         if(connectedTiles.containsKey(currentTile.getConnectedNetwork())) {
             networkTiles = connectedTiles.get(currentTile.getConnectedNetwork());
         }
-        tiles[x][y].onBlockEnter(this, player, networkTiles);
 
         if(currentTile.shouldPropogateAction()) {
             for(Tile tile : networkTiles) {
                 tile.onAction();
             }
         }
+
+        tiles[x][y].onBlockEnter(this, player, networkTiles);
     }
 
     private void onBlockExit() {
@@ -389,13 +390,14 @@ public class World implements InputProcessor {
         if(connectedTiles.containsKey(currentTile.getConnectedNetwork())) {
             networkTiles = connectedTiles.get(currentTile.getConnectedNetwork());
         }
-        tiles[x][y].onBlockExit(this, player, networkTiles);
 
         if(currentTile.shouldPropogateAction()) {
             for(Tile tile : networkTiles) {
                 tile.onAction();
             }
         }
+
+        tiles[x][y].onBlockExit(this, player, networkTiles);
 
         lastBlockX = block.getTileX();
         lastBlockY = block.getTileY();

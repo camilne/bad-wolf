@@ -15,6 +15,11 @@ public class WallTile extends Tile {
     }
 
     @Override
+    public boolean isBoxPlaceable() {
+        return false;
+    }
+
+    @Override
     protected int getRegionX() {
         return 1;
     }

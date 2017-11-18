@@ -23,6 +23,11 @@ public class DoorTile extends Tile{
     }
 
     @Override
+    public boolean isBoxPlaceable() {
+        return isTravelable();
+    }
+
+    @Override
     public void onAction() {
         isOpened = !isOpened;
         if (isOpened) {

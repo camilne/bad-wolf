@@ -42,4 +42,14 @@ public class ReleasableButtonTile extends ButtonTile {
         pressButton.play();
         isPressed = !isPressed;
     }
+
+    @Override
+    public int getRegionX() {
+        return 0;
+    }
+
+    @Override
+    public int getRegionY() {
+        return 1;
+    }
 }
