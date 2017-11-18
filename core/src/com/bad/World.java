@@ -47,7 +47,7 @@ public class World implements InputProcessor {
     private int lastBlockX;
     private int lastBlockY;
     private Runnable fadeTask;
-    private int fadeTime;
+    private float fadeTime;
 
     public World(String avatarImage) {
         batch = new SpriteBatch();
@@ -62,7 +62,7 @@ public class World implements InputProcessor {
         blockAlongX = false;
         lastBlockX = -1;
         lastBlockY = -1;
-        fadeTime = FADE_TIME / 2;
+        fadeTime = FADE_TIME / 2.0f;
 
         level = 1;
         File levelsFolder = new File("levels/");
@@ -101,23 +101,31 @@ public class World implements InputProcessor {
 
         if(fadeTime <= FADE_TIME) {
             if(fadeTime < FADE_TIME / 3) {
-                float a = (float)fadeTime / (FADE_TIME / 3);
+                float a = map(0, FADE_TIME / 3, 0, 1, fadeTime);
                 batch.setColor(1, 1, 1, a);
-            } else if(fadeTime > FADE_TIME * 2 / 3) {
-                float a = 1 - (float)fadeTime / (FADE_TIME * 2.0f / 3);
+            } else if(fadeTime > FADE_TIME * 2.0 / 3) {
+                float a = map(2.0f / 3* FADE_TIME, FADE_TIME, 1, 0, fadeTime);
                 batch.setColor(1, 1, 1, a);
             } else {
                 batch.setColor(1, 1, 1, 1);
-                if(fadeTime >= FADE_TIME / 2 - 1000/60/2 && fadeTime < FADE_TIME / 2 + 1000/60/2 && fadeTask != null) {
+                if(fadeTime >= FADE_TIME / 2 - 1000.0/60/2 && fadeTime < FADE_TIME / 2 + 1000.0/60/2 && fadeTask != null) {
                     fadeTask.run();
                 }
             }
 
             batch.draw(texture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
-            fadeTime += 1000/60;
+            fadeTime += 1000.0f/60;
         }
         batch.end();
+    }
+
+    // Maps a variable x from a range [a,b] to [c,d]
+    private float map(float a, float b, float c, float d, float x) {
+        if(b - a == 0)
+            return 0;
+
+        return (x - a) / (b - a) * (d - c) + c;
     }
 
     private void renderTiles() {
