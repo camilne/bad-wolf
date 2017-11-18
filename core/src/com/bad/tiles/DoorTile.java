@@ -9,7 +9,7 @@ import com.badlogic.gdx.audio.Sound;
  */
 public class DoorTile extends Tile{
     private boolean isOpened;
-    private static Sound openDoor = Gdx.audio.newSound(Gdx.files.local("../assets/sounds/open_door.mp3"));
+    private static Sound openDoor = Gdx.audio.newSound(Gdx.files.local("sounds/open_door.mp3"));
 
     public DoorTile(int x, int y) {
         super(x, y);
