@@ -31,7 +31,7 @@ public abstract class Tile {
                 images[i][j] = new TextureRegion(image, i * IMG_TILE_SIZE, j * IMG_TILE_SIZE, IMG_TILE_SIZE, IMG_TILE_SIZE);
             }
         }
-}
+    }
 
     private int x;
     private int y;
