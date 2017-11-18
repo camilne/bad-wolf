@@ -2,6 +2,8 @@ package com.bad.tiles;
 
 import com.bad.Player;
 import com.bad.World;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 
 import java.util.ArrayList;
 
@@ -10,6 +12,8 @@ import java.util.ArrayList;
  * @version 1.0.0
  */
 public class TunnelTile extends Tile {
+    private static Sound tunnelSound = Gdx.audio.newSound(Gdx.files.local("sounds/tunnel.mp3"));
+
     public TunnelTile(int x, int y) {
         super(x, y);
     }
@@ -31,6 +35,7 @@ public class TunnelTile extends Tile {
 
     @Override
     public void onPlayerEnter(World world, Player player, ArrayList<Tile> networkTiles) {
+        tunnelSound.play();
         for(Tile tile : networkTiles) {
             if(tile instanceof TunnelSpawnTile) {
                 world.setPlayerPosition(tile.getX(), tile.getY());

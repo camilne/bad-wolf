@@ -12,7 +12,7 @@ import java.util.ArrayList;
  * @version 1.0.0
  */
 public class StairTile extends Tile {
-    private static Sound stairSound = Gdx.audio.newSound(Gdx.files.local("sounds/stairs.mp3"));
+    private static Sound stairSound = Gdx.audio.newSound(Gdx.files.local("sounds/stairs2.mp3"));
 
     public StairTile(int x, int y) {
         super(x, y);
@@ -37,5 +37,6 @@ public class StairTile extends Tile {
     public void onPlayerEnter(World world, Player player, ArrayList<Tile> networkTiles) {
         stairSound.play();
         world.nextLevel();
+
     }
 }
