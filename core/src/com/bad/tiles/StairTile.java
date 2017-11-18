@@ -1,5 +1,8 @@
 package com.bad.tiles;
 
+import com.bad.Player;
+import com.bad.World;
+
 /**
  * @author Cameron Milne
  * @version 1.0.0
@@ -22,5 +25,10 @@ public class StairTile extends Tile {
     @Override
     protected int getRegionY() {
         return 0;
+    }
+
+    @Override
+    public void onPlayerEnter(World world, Player player) {
+        world.nextLevel();
     }
 }

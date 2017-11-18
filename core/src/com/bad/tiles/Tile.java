@@ -1,5 +1,7 @@
 package com.bad.tiles;
 
+import com.bad.Player;
+import com.bad.World;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -76,6 +78,8 @@ public abstract class Tile {
     }
 
     public void onAction() { }
+
+    public void onPlayerEnter(World world, Player player) { }
 
     public boolean shouldPropogateAction() {
         return false;

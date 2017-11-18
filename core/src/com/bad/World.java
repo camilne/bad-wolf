@@ -16,7 +16,7 @@ import java.util.HashMap;
  * @author Cameron Milne
  * @version 1.0.0
  */
-public class World implements InputProcessor{
+public class World implements InputProcessor {
 
     private int width;
     private int height;
@@ -26,17 +26,28 @@ public class World implements InputProcessor{
     private float desPosX;
     private float desPosY;
     private HashMap<Integer, ArrayList<Tile>> connectedTiles;
+    private int level;
+    private int maxLevels;
 
     public World() {
         Gdx.input.setInputProcessor(this);
         camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         connectedTiles = new HashMap<Integer, ArrayList<Tile>>();
 
-        try {
-            loadLevel("levels/1.txt");
-        } catch (IOException e) {
-            e.printStackTrace();
+        level = 1;
+        File levelsFolder = new File("levels/");
+        if(levelsFolder.exists()) {
+            File[] files = levelsFolder.listFiles();
+            if(files == null) {
+                maxLevels = 0;
+            } else {
+                maxLevels = files.length;
+            }
+        } else {
+            maxLevels = 0;
         }
+
+        loadLevel("levels/1.txt");
     }
 
     public void update() {
@@ -81,43 +92,52 @@ public class World implements InputProcessor{
         desPosY = y;
     }
 
-    private void loadLevel(String name) throws IOException {
-        BufferedReader reader = new BufferedReader(new FileReader(name));
+    private void loadLevel(String name) {
+        if(!new File(name).exists())
+            return;
 
-        int playerX = 0;
-        int playerY = 0;
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(name));
 
-        width = Integer.parseInt(reader.readLine().split("=")[1].trim());
-        height = Integer.parseInt(reader.readLine().split("=")[1].trim());
+            int playerX = 0;
+            int playerY = 0;
 
-        tiles = new Tile[width][height];
-        for(int j = height - 1; j >= 0; j--) {
-            String[] strTiles = reader.readLine().split("\\s+");
-            for (int i = 0; i < width; i++) {
-                String strId = strTiles[i].split("=")[0];
-                tiles[i][j] = TileFactory.create(i, j, Integer.parseInt(strId));
+            width = Integer.parseInt(reader.readLine().split("=")[1].trim());
+            height = Integer.parseInt(reader.readLine().split("=")[1].trim());
 
-                if(strTiles[i].split("=").length > 1) {
-                    int connect = Integer.parseInt(strTiles[i].split("=")[1]);
-                    if(!connectedTiles.containsKey(connect)) {
-                        connectedTiles.put(connect, new ArrayList<Tile>());
+            tiles = new Tile[width][height];
+            connectedTiles.clear();
+
+            for (int j = height - 1; j >= 0; j--) {
+                String[] strTiles = reader.readLine().split("\\s+");
+                for (int i = 0; i < width; i++) {
+                    String strId = strTiles[i].split("=")[0];
+                    tiles[i][j] = TileFactory.create(i, j, Integer.parseInt(strId));
+
+                    if (strTiles[i].split("=").length > 1) {
+                        int connect = Integer.parseInt(strTiles[i].split("=")[1]);
+                        if (!connectedTiles.containsKey(connect)) {
+                            connectedTiles.put(connect, new ArrayList<Tile>());
+                        }
+                        connectedTiles.get(connect).add(tiles[i][j]);
+                        tiles[i][j].setConnectedNetwork(connect);
                     }
-                    connectedTiles.get(connect).add(tiles[i][j]);
-                    tiles[i][j].setConnectedNetwork(connect);
-                }
 
-                if(tiles[i][j].isSpawn()) {
-                    playerX = i * Tile.SIZE;
-                    playerY = j * Tile.SIZE;
+                    if (tiles[i][j].isSpawn()) {
+                        playerX = i * Tile.SIZE;
+                        playerY = j * Tile.SIZE;
+                    }
                 }
             }
+
+            reader.close();
+
+            player = new Player(playerX, playerY);
+            camera.position.x = player.getCenterX();
+            camera.position.y = player.getCenterY();
+        } catch(IOException e) {
+            e.printStackTrace();
         }
-
-        reader.close();
-
-        player = new Player(playerX, playerY);
-        camera.position.x = player.getCenterX();
-        camera.position.y = player.getCenterY();
     }
 
     private boolean movePlayer(int x, int y) {
@@ -130,6 +150,7 @@ public class World implements InputProcessor{
         if(tiles[player.getTileX() + x][player.getTileY() + y].isTravelable()) {
             player.move(x, y);
             Tile currentTile = tiles[player.getTileX()][player.getTileY()];
+            currentTile.onPlayerEnter(this, player);
 
             if(currentTile.getConnectedNetwork() != -1 && currentTile.shouldPropogateAction()) {
                 ArrayList<Tile> networkTiles = connectedTiles.get(currentTile.getConnectedNetwork());
@@ -141,6 +162,13 @@ public class World implements InputProcessor{
         }
 
         return false;
+    }
+
+    public void nextLevel() {
+        if(++level > maxLevels) {
+            level = 1;
+        }
+        loadLevel("levels/" + (level) + ".txt");
     }
 
     @Override
