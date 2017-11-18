@@ -5,6 +5,7 @@ import com.bad.tiles.TileFactory;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
@@ -29,11 +30,15 @@ public class World implements InputProcessor {
     private int level;
     private int maxLevels;
     private String avatarImage;
+    private static Sound music = Gdx.audio.newSound(Gdx.files.local("../assets/sounds/background_music.mp3"));
+
 
     public World(String avatarImage) {
         this.avatarImage = avatarImage;
         Gdx.input.setInputProcessor(this);
         camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        music.play();
+        music.loop();
         connectedTiles = new HashMap<Integer, ArrayList<Tile>>();
 
         level = 1;
