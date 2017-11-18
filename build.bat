@@ -32,7 +32,6 @@ cd build
 
 @echo @echo off > run.bat
 @echo java -jar bad-wolf-launcher.jar >> run.bat
-@echo pause >> run.bat
 
 COPY "..\desktop\build\libs\desktop-1.0.jar" "bad-wolf.jar"
 xcopy /s "..\core\assets" "."

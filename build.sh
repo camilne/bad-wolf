@@ -34,7 +34,6 @@ cd build
 
 echo "#!/bin/bash" > run.sh
 echo "java -jar bad-wolf-launcher.jar" >> run.sh
-echo "read -p 'Press [ENTER] to continue...'" >> run.sh
 
 cp ../desktop/build/libs/desktop-1.0.jar bad-wolf.jar
 cp -r ../core/assets/* .
