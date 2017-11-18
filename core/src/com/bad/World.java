@@ -28,8 +28,10 @@ public class World implements InputProcessor {
     private HashMap<Integer, ArrayList<Tile>> connectedTiles;
     private int level;
     private int maxLevels;
+    private String avatarImage;
 
-    public World() {
+    public World(String avatarImage) {
+        this.avatarImage = avatarImage;
         Gdx.input.setInputProcessor(this);
         camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         connectedTiles = new HashMap<Integer, ArrayList<Tile>>();
@@ -143,7 +145,7 @@ public class World implements InputProcessor {
 
             reader.close();
 
-            player = new Player(playerX, playerY);
+            player = new Player(playerX, playerY, avatarImage);
             camera.position.x = player.getCenterX();
             camera.position.y = player.getCenterY();
         } catch(IOException e) {

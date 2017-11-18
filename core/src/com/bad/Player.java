@@ -20,12 +20,12 @@ public class Player {
     private float size;
     private Texture texture;
 
-    public Player(float x, float y) {
+    public Player(float x, float y, String avatarImage) {
         this.x = x;
         this.y = y;
 
         size = Tile.SIZE;
-        texture = new Texture("images/avatar2.png");
+        texture = new Texture("images/" + avatarImage);
     }
 
     public void update() {

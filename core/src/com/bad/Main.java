@@ -9,11 +9,16 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 public class Main extends ApplicationAdapter {
 	private SpriteBatch batch;
 	private World world;
+	private String avatarImage;
+
+	public Main(String avatarImage){
+		this.avatarImage = avatarImage;
+	}
 	
 	@Override
 	public void create () {
 		batch = new SpriteBatch();
-		world = new World();
+		world = new World(avatarImage);
 	}
 
 	@Override
