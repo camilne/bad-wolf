@@ -13,7 +13,7 @@ import java.util.ArrayList;
  */
 public class ButtonTile extends Tile {
     private boolean isPressed = false;
-    private static Sound pressButton = Gdx.audio.newSound(Gdx.files.local("../assets/sounds/press_button.mp3"));
+    private static Sound pressButton = Gdx.audio.newSound(Gdx.files.local("sounds/press_button.mp3"));
 
     public ButtonTile(int x, int y) {
         super(x, y);

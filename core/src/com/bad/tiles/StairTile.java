@@ -12,7 +12,7 @@ import java.util.ArrayList;
  * @version 1.0.0
  */
 public class StairTile extends Tile {
-    private static Sound stairSound = Gdx.audio.newSound(Gdx.files.local("../assets/sounds/stairs.mp3"));
+    private static Sound stairSound = Gdx.audio.newSound(Gdx.files.local("sounds/stairs.mp3"));
 
     public StairTile(int x, int y) {
         super(x, y);
