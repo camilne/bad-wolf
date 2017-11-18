@@ -102,8 +102,10 @@ public class World implements InputProcessor {
     }
 
     private void loadLevel(String name) {
-        if(!new File(name).exists())
+        if(!new File(name).exists()) {
+            System.out.println("Level not found: " + name);
             return;
+        }
 
         try {
             BufferedReader reader = new BufferedReader(new FileReader(name));
