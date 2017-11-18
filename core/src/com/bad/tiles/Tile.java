@@ -31,7 +31,7 @@ public abstract class Tile {
                 images[i][j] = new TextureRegion(image, i * IMG_TILE_SIZE, j * IMG_TILE_SIZE, IMG_TILE_SIZE, IMG_TILE_SIZE);
             }
         }
-}
+    }
 
     private int x;
     private int y;
@@ -56,6 +56,12 @@ public abstract class Tile {
     public void onAction() { }
 
     public void onPlayerEnter(World world, Player player, ArrayList<Tile> networkTiles) { }
+
+    public void onPlayerExit(World world, Player player, ArrayList<Tile> networkTiles) { }
+
+    public void onBlockEnter(World world, Player player, ArrayList<Tile> networkTiles) { }
+
+    public void onBlockExit(World world, Player player, ArrayList<Tile> networkTiles) { }
 
     public boolean shouldPropogateAction() {
         return false;

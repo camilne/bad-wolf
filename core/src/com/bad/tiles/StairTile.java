@@ -6,6 +6,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * @author Cameron Milne
@@ -36,7 +38,14 @@ public class StairTile extends Tile {
     @Override
     public void onPlayerEnter(World world, Player player, ArrayList<Tile> networkTiles) {
         stairSound.play();
-        world.nextLevel();
-
+        world.fadeToBlack();
+        final World finalWorld = world;
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                finalWorld.nextLevel();
+            }
+        }, 1000);
     }
 }
