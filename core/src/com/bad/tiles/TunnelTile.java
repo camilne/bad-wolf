@@ -6,6 +6,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * @author Cameron Milne
@@ -36,11 +38,20 @@ public class TunnelTile extends Tile {
     @Override
     public void onPlayerEnter(World world, Player player, ArrayList<Tile> networkTiles) {
         tunnelSound.play();
-        for(Tile tile : networkTiles) {
-            if(tile instanceof TunnelSpawnTile) {
-                world.setPlayerPosition(tile.getX(), tile.getY());
-                break;
+        world.fadeToBlack();
+        final World finalWorld = world;
+        final ArrayList<Tile> finalNetworkTiles = networkTiles;
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                for(Tile tile : finalNetworkTiles) {
+                    if(tile instanceof TunnelSpawnTile) {
+                        finalWorld.setPlayerPosition(tile.getX(), tile.getY());
+                        break;
+                    }
+                }
             }
-        }
+        }, 1000);
     }
 }

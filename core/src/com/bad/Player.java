@@ -18,14 +18,15 @@ public class Player {
     private float y;
     private int rotation;
     private float size;
-    private Texture texture;
+    private static Texture texture;
 
     public Player(float x, float y, String avatarImage) {
         this.x = x;
         this.y = y;
 
         size = Tile.SIZE;
-        texture = new Texture("images/" + avatarImage);
+        if(texture == null)
+            texture = new Texture("images/" + avatarImage);
     }
 
     public void update() {

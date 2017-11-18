@@ -7,11 +7,14 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Timer;
 
 /**
  * @author Cameron Milne
@@ -31,9 +34,15 @@ public class World implements InputProcessor {
     private int maxLevels;
     private String avatarImage;
     private static Sound music = Gdx.audio.newSound(Gdx.files.local("sounds/background_music.mp3"));
+    private SpriteBatch batch;
+    private Texture texture;
+    private float a = 1;
+    private boolean fadingToBlack = true;
 
 
     public World(String avatarImage) {
+        batch = new SpriteBatch();
+        texture = new Texture("images/black.png");
         this.avatarImage = avatarImage;
         Gdx.input.setInputProcessor(this);
         camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -66,15 +75,35 @@ public class World implements InputProcessor {
         camera.update();
     }
 
-    public void render(SpriteBatch batch) {
+    public void render() {
+        batch.begin();
         batch.setProjectionMatrix(camera.combined);
 
-        renderTiles(batch);
+        renderTiles();
 
         player.render(batch);
+
+        if (fadingToBlack) {
+            if (a <= 1) {
+                batch.setColor(1, 1, 1, a);
+                batch.draw(texture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+                a += 1.0 / 60;
+            } else {
+                fadingToBlack = false;
+            }
+        }
+        else {
+            if (a >= 0) {
+                batch.setColor(1,1,1,a);
+                batch.draw(texture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+                a -= 1.0 / 60;
+            }
+        }
+        batch.setColor(1, 1, 1, 1);
+        batch.end();
     }
 
-    private void renderTiles(SpriteBatch batch) {
+    private void renderTiles() {
         for(int i = -3; i <= 3; i++) {
             for(int j = -3; j <= 3; j++) {
                 int ia = Math.abs(i);
@@ -156,6 +185,11 @@ public class World implements InputProcessor {
         } catch(IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void fadeToBlack() {
+        a = 0;
+        fadingToBlack = true;
     }
 
     private boolean movePlayer(int x, int y) {
