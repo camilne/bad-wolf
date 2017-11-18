@@ -37,7 +37,8 @@ public class World implements InputProcessor {
     private GameObject[][] objects;
     private BlockObject block;
     private boolean blockAlongX;
-
+    private int lastBlockX;
+    private int lastBlockY;
 
     public World(String avatarImage) {
         this.avatarImage = avatarImage;
@@ -48,6 +49,8 @@ public class World implements InputProcessor {
         connectedTiles = new HashMap<Integer, ArrayList<Tile>>();
         block = null;
         blockAlongX = false;
+        lastBlockX = -1;
+        lastBlockY = -1;
 
         level = 1;
         File levelsFolder = new File("levels/");
@@ -262,21 +265,37 @@ public class World implements InputProcessor {
         }
 
         if(tiles[player.getTileX() + x][player.getTileY() + y].isTravelable() && objects[player.getTileX() + x][player.getTileY() + y] == null) {
-            player.move(x, y);
             Tile currentTile = tiles[player.getTileX()][player.getTileY()];
-
             ArrayList<Tile> networkTiles = new ArrayList<Tile>();
             if(connectedTiles.containsKey(currentTile.getConnectedNetwork())) {
                 networkTiles = connectedTiles.get(currentTile.getConnectedNetwork());
             }
-
-            currentTile.onPlayerEnter(this, player, networkTiles);
 
             if(currentTile.shouldPropogateAction()) {
                 for(Tile tile : networkTiles) {
                     tile.onAction();
                 }
             }
+
+            tiles[player.getTileX()][player.getTileY()].onPlayerExit(this, player, networkTiles);
+
+            player.move(x, y);
+
+            currentTile = tiles[player.getTileX()][player.getTileY()];
+
+            networkTiles = new ArrayList<Tile>();
+            if(connectedTiles.containsKey(currentTile.getConnectedNetwork())) {
+                networkTiles = connectedTiles.get(currentTile.getConnectedNetwork());
+            }
+
+            if(currentTile.shouldPropogateAction()) {
+                for(Tile tile : networkTiles) {
+                    tile.onAction();
+                }
+            }
+
+            currentTile.onPlayerEnter(this, player, networkTiles);
+
             return true;
         }
 
@@ -303,6 +322,34 @@ public class World implements InputProcessor {
                 tile.onAction();
             }
         }
+    }
+
+    private void onBlockExit() {
+        if(block == null)
+            return;
+
+        int x = lastBlockX;
+        int y = lastBlockY;
+
+        if(x < 0 || x >= width || y < 0 || y >= height) {
+            return;
+        }
+
+        ArrayList<Tile> networkTiles = new ArrayList<Tile>();
+        Tile currentTile = tiles[x][y];
+        if(connectedTiles.containsKey(currentTile.getConnectedNetwork())) {
+            networkTiles = connectedTiles.get(currentTile.getConnectedNetwork());
+        }
+        tiles[x][y].onBlockExit(this, player, networkTiles);
+
+        if(currentTile.shouldPropogateAction()) {
+            for(Tile tile : networkTiles) {
+                tile.onAction();
+            }
+        }
+
+        lastBlockX = block.getTileX();
+        lastBlockY = block.getTileY();
     }
 
     public boolean setPlayerPosition(int x, int y) {
@@ -367,29 +414,41 @@ public class World implements InputProcessor {
             case Input.Keys.W:
             case Input.Keys.UP:
                 if(block == null || !blockAlongX)
-                    if(movePlayer(0, 1))
+                    if(movePlayer(0, 1)) {
                         onBlockEnter();
+                        onBlockExit();
+                    }
                 break;
             case Input.Keys.A:
             case Input.Keys.LEFT:
                 if(block == null || blockAlongX)
-                    if(movePlayer(-1, 0))
+                    if(movePlayer(-1, 0)) {
                         onBlockEnter();
+                        onBlockExit();
+                    }
                 break;
             case Input.Keys.S:
             case Input.Keys.DOWN:
                 if(block == null || !blockAlongX)
-                    if(movePlayer(0, -1))
+                    if(movePlayer(0, -1)) {
                         onBlockEnter();
+                        onBlockExit();
+                    }
                 break;
             case Input.Keys.D:
             case Input.Keys.RIGHT:
                 if(block == null || blockAlongX)
-                    if(movePlayer(1, 0))
+                    if(movePlayer(1, 0)) {
                         onBlockEnter();
+                        onBlockExit();
+                    }
                 break;
             case Input.Keys.SPACE:
                 block = selectBlock();
+                if(block != null) {
+                    lastBlockX = block.getTileX();
+                    lastBlockY = block.getTileY();
+                }
                 break;
         }
         return false;
