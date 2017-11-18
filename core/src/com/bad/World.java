@@ -425,14 +425,9 @@ public class World implements InputProcessor {
     }
 
     public void playCredits() {
-        fadeToBlack(new Runnable() {
-            @Override
-            public void run() {
-                music.stop();
-                Application.launch(Credits.class, String.valueOf(Gdx.graphics.getWidth()), String.valueOf(Gdx.graphics.getHeight()));
-                Gdx.app.exit();
-            }
-        });
+        music.stop();
+        Application.launch(Credits.class, String.valueOf(Gdx.graphics.getWidth()), String.valueOf(Gdx.graphics.getHeight()));
+        Gdx.app.exit();
     }
 
     private BlockObject selectBlock() {
