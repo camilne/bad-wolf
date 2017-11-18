@@ -8,6 +8,8 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * @author Cameron Milne
@@ -22,10 +24,12 @@ public class World implements InputProcessor{
     private OrthographicCamera camera;
     private float desPosX;
     private float desPosY;
+    private HashMap<Integer, ArrayList<Tile>> connectedTiles;
 
     public World() {
         Gdx.input.setInputProcessor(this);
         camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        connectedTiles = new HashMap<Integer, ArrayList<Tile>>();
 
         try {
             loadLevel("levels/1.txt");
@@ -89,7 +93,18 @@ public class World implements InputProcessor{
         for(int j = height - 1; j >= 0; j--) {
             String[] strTiles = reader.readLine().split("\\s+");
             for (int i = 0; i < width; i++) {
-                tiles[i][j] = new Tile(i, j, Integer.parseInt(strTiles[i]));
+                String strId = strTiles[i].split("=")[0];
+                tiles[i][j] = new Tile(i, j, Integer.parseInt(strId));
+
+                if(strTiles[i].split("=").length > 1) {
+                    int connect = Integer.parseInt(strTiles[i].split("=")[1]);
+                    if(!connectedTiles.containsKey(connect)) {
+                        connectedTiles.put(connect, new ArrayList<Tile>());
+                    }
+                    connectedTiles.get(connect).add(tiles[i][j]);
+                    tiles[i][j].setConnectedNetwork(connect);
+                }
+
                 if(tiles[i][j].isSpawn()) {
                     playerX = i * Tile.SIZE;
                     playerY = j * Tile.SIZE;
@@ -113,6 +128,13 @@ public class World implements InputProcessor{
 
         if(tiles[player.getTileX() + x][player.getTileY() + y].canTravel()) {
             player.move(x, y);
+            Tile currentTile = tiles[player.getTileX()][player.getTileY()];
+            if(currentTile.getConnectedNetwork() != -1 && currentTile.shouldPropogateAction()) {
+                ArrayList<Tile> networkTiles = connectedTiles.get(currentTile.getConnectedNetwork());
+                for(Tile tile : networkTiles) {
+                    tile.onAction();
+                }
+            }
             return true;
         }
 
