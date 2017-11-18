@@ -19,12 +19,14 @@ public class Player {
     private int rotation;
     private float size;
     private static Texture texture;
+    private Direction direction;
 
     public Player(float x, float y, String avatarImage) {
         this.x = x;
         this.y = y;
 
         size = Tile.SIZE;
+        direction = Direction.NONE;
         if(texture == null)
             texture = new Texture("images/" + avatarImage);
     }
@@ -43,6 +45,8 @@ public class Player {
     }
 
     public void rotate(Direction direction){
+        this.direction = direction;
+
         if(direction == Direction.UP){
             rotation = 0;
         }
@@ -87,5 +91,9 @@ public class Player {
 
     public int getTileY() {
         return (int)(getCenterY() / Tile.SIZE);
+    }
+
+    public Direction getDirection() {
+        return direction;
     }
 }

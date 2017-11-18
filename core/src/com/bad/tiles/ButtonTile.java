@@ -12,8 +12,8 @@ import java.util.ArrayList;
  * @version 1.0.0
  */
 public class ButtonTile extends Tile {
-    private boolean isPressed = false;
-    private static Sound pressButton = Gdx.audio.newSound(Gdx.files.local("sounds/press_button.mp3"));
+    protected boolean isPressed = false;
+    protected static Sound pressButton = Gdx.audio.newSound(Gdx.files.local("sounds/press_button.mp3"));
 
     public ButtonTile(int x, int y) {
         super(x, y);
@@ -32,14 +32,17 @@ public class ButtonTile extends Tile {
     @Override
     public void onPlayerEnter(World world, Player player, ArrayList<Tile> networkTiles) {
         pressButton.play();
+        isPressed = true;
     }
 
     @Override
-    public void onAction() {
-        if (!isPressed) {
-            isPressed = true;
-        }
+    public void onBlockEnter(World world, Player player, ArrayList<Tile> networkTiles) {
+        pressButton.play();
+        isPressed = true;
     }
+
+    @Override
+    public void onBlockExit(World world, Player player, ArrayList<Tile> networkTiles) { pressButton.play(); }
 
     @Override
     protected int getRegionX() {
