@@ -45,11 +45,11 @@ public class ReleasableButtonTile extends ButtonTile {
 
     @Override
     public int getRegionX() {
-        return 0;
+        return isPressed ? super.getRegionX() : 0;
     }
 
     @Override
     public int getRegionY() {
-        return 1;
+        return isPressed ? super.getRegionY() : 1;
     }
 }
