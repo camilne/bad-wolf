@@ -13,6 +13,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import javafx.application.Application;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -63,6 +64,8 @@ public class World implements InputProcessor {
         lastBlockX = -1;
         lastBlockY = -1;
         fadeTime = FADE_TIME / 2.0f;
+
+        playCredits();
 
         level = 1;
         File levelsFolder = new File("levels/");
@@ -417,9 +420,21 @@ public class World implements InputProcessor {
 
     public void nextLevel() {
         if(++level > maxLevels) {
-            level = 1;
+            playCredits();
+            return;
         }
         loadLevel("levels/" + (level) + ".txt");
+    }
+
+    public void playCredits() {
+        fadeToBlack(new Runnable() {
+            @Override
+            public void run() {
+                music.stop();
+                Application.launch(Credits.class, String.valueOf(Gdx.graphics.getWidth()), String.valueOf(Gdx.graphics.getHeight()));
+                Gdx.app.exit();
+            }
+        });
     }
 
     private BlockObject selectBlock() {
